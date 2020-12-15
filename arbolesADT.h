@@ -14,8 +14,10 @@ static int compare(const char * s1, const char * s2){
   return strcmp(s1,s2);
 }
 
-treeADT newTreeList();
+treeADT newTreeList(void);
 
 void freeTreeList(treeADT list);
+
+int addNeighbourhood(treeADT trees, const char * s);
 
 #endif /*arbolesADT_h*/
