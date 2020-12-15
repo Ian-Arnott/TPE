@@ -1,14 +1,17 @@
 #include "arbolesADT.h"
 #include <stdlib.h>
 #include <stddef.h>
+#define BLOCK 50
 
 typedef struct hoodNode{
   size_t totalSpecies;
   size_t totalTrees;
   int population;
   char * name;
-  struct specie * species;
-  struct road * roads;
+  struct elementQty * species;
+  size_t speciesDim;
+  struct elementQty * roads;
+  size_t roadsDim;
   struct hoodNode * tail;
 }hoodNode;
 
@@ -20,15 +23,10 @@ typedef struct speciesNode{
   struct speciesNode * tail;
 }speciesNode;
 
-typedef struct specie{
+typedef struct elementQty{  //strcut generica para guardar un tipo de dato con nombre y tiene una cantidad x de apariciones
   char * name;
   size_t qty;
 }species;
-
-typedef struct road{
-  size_t qty;
-  char * name;
-}road;
 
 typedef struct treeCDT{
   struct hoodNode * hFirst;  // cada nodo es un barrio nuevo, se llenan en la primera lectura del barrio(dependiendo de la ciudad)
@@ -121,4 +119,54 @@ int addSpecies(treeADT trees, const char * name, int diameter){
   int added = 0;
   trees->sFirst = addSpeciesRec(trees->sFirst,name,diameter,added)
   return added;
+}
+
+
+static int checkElem(elementQty * vec, const char * name, size_t dim){
+  int i = 0;
+  for( i = 0 ; i < dim ; i++){
+    if( compare(vec[i].name,name) == 0)
+      return i;
+  }
+  return -1;
+}  // -1 si no esta y si esta retorna el indice
+static void addElem(elementQty * vec, const char * name, size_t * dim){
+  if((*dim)%BLOCK == 0)
+    if((vec = realloc(vec, (BLOCK+(*dim))*sizeof(elementQty)))==NULL)
+      exit(1);
+  else{
+    vec[dim].name = malloc(sizeof(char)*(strlen(name)+1));
+    strcpy(vec[(*dim)].name,name);
+    vec[(*dim)++].qty++;
+  }
+}
+static hoodNode addSpeciesToHoodRec(hoodNode list, const char * hood, const char * specie, const char * road, int * added){
+  if(list == NULL)
+    return NULL;
+  int c = compare(list->name, hood);
+  if( c == 0 ){
+    int i;
+    //para el vector que contiene las calles
+    if((i=checkElem(list->road,road,list->roadsDim))!=-1)
+      list->road[i].qty++;
+    else
+      addElem(list->road,road,list->roadsDim);
+    //idem a lo anterior pero con el vector de species
+    if((i=checkElem(list->specie,specie,list->speciesDim))!=-1)
+      list->species[i].qty++;
+    else{
+      addElem(list->species,specie,&(list->speciesDim));
+      (*added)=1;
+    }
+    }
+  else
+    list->tail = addSpeciesToHoodRec(list,hood,specie,road);
+  return list;
+}
+int addSpeciesToHood(treeADT trees, const char * hood, const char * specie, const char * road){
+  // agregamos todos los datos que faltan al ADT
+  int added=0; // si se agrega a la lista de Neighbourhood en el vector species => added=1
+  trees->hFirst = addSpeciesToHoodRec(trees->hFirst,hood,specie,road,&added);
+  if(added)
+    trees->sFirst = addHoodToSpecies();
 }
