@@ -23,7 +23,7 @@ typedef struct speciesNode{
   struct speciesNode * tail;
 }speciesNode;
 
-typedef struct elementQty{  //strcut generica para guardar un tipo de dato con nombre y tiene una cantidad x de apariciones
+typedef struct elementQty{  //struct generica para guardar un tipo de dato con nombre y tiene una cantidad x de apariciones
   char * name;
   size_t qty;
 }species;
@@ -38,7 +38,7 @@ treeADT newTreeList(void){
   return calloc(1,sizeof(treeCDT));
 }
 
-static hoodNode * addNeighbourhoodRec(hoodNode list, const char * name, int * added, int pop){
+static hoodNode * addNeighbourhoodRec(hoodNode * list, const char * name, int * added, int pop){
   if(list==NULL){
     hoodNode aux = malloc(sizeof(hoodNode));
     if( aux == NULL )
@@ -67,7 +67,7 @@ int addNeighbourhood(treeADT trees, const char * name, int pop){
   return added;
 }
 
-static void freeHoods(hoodNode list){
+static void freeHoods(hoodNode * list){
   if(list == NULL)
     return;
   freeHoods(list->tail);
@@ -76,7 +76,7 @@ static void freeHoods(hoodNode list){
   free(list);
   return;
 }
-static void freeSpecies(speciesNode list) {
+static void freeSpecies(speciesNode * list) {
   if(list == NULL)
     return;
   freeSpecies(list->tail);
@@ -91,7 +91,7 @@ void freeTreeList(treeADT list){
   return;
 }
 
-static speciesNode * addSpeciesRec(speciesNode list, const char * name, int diameter, int * added){
+static speciesNode * addSpeciesRec(speciesNode * list, const char * name, int diameter, int * added){
   if(list == NULL || (c=compare(list->name,name)) > 0){
     speciesNode new = malloc(sizeof(speciesNode));
     if(new == NULL)
@@ -140,7 +140,7 @@ static void addElem(elementQty * vec, const char * name, size_t * dim){
     vec[(*dim)++].qty++;
   }
 }
-static hoodNode addSpeciesToHoodRec(hoodNode list, const char * hood, const char * specie, const char * road, int * added){
+static hoodNode * addSpeciesToHoodRec(hoodNode * list, const char * hood, const char * specie, const char * road, int * added){
   if(list == NULL)
     return NULL;
   int c = compare(list->name, hood);
@@ -150,7 +150,7 @@ static hoodNode addSpeciesToHoodRec(hoodNode list, const char * hood, const char
     if((i=checkElem(list->road,road,list->roadsDim))!=-1)
       list->road[i].qty++;
     else
-      addElem(list->road,road,list->roadsDim);
+      addElem(list->road,road,&(list->roadsDim));
     //idem a lo anterior pero con el vector de species
     if((i=checkElem(list->specie,specie,list->speciesDim))!=-1)
       list->species[i].qty++;
@@ -163,10 +163,20 @@ static hoodNode addSpeciesToHoodRec(hoodNode list, const char * hood, const char
     list->tail = addSpeciesToHoodRec(list,hood,specie,road);
   return list;
 }
-int addSpeciesToHood(treeADT trees, const char * hood, const char * specie, const char * road){
+static speciesNode * addHoodToSpecies(speciesNode * list, const char * specie){
+  if(list == NULL)
+    return NULL;
+  int c = compare(list->name,specie);
+  if(c==0)
+    list->hoods++;
+  else if(c<0)
+    list->tail = addHoodToSpecies(list->tail,specie);
+  return list;
+}
+void addSpeciesToHood(treeADT trees, const char * hood, const char * specie, const char * road){
   // agregamos todos los datos que faltan al ADT
   int added=0; // si se agrega a la lista de Neighbourhood en el vector species => added=1
   trees->hFirst = addSpeciesToHoodRec(trees->hFirst,hood,specie,road,&added);
   if(added)
-    trees->sFirst = addHoodToSpecies();
+    trees->sFirst = addHoodToSpecies(trees->sFirst,specie);
 }

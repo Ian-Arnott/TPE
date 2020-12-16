@@ -22,6 +22,6 @@ int addNeighbourhood(treeADT trees, const char * name, int pop);
 
 int addSpecies(treeADT trees, const char * name, int diameter);
 
-int addSpeciesToHood(treeADT trees, const char * hood, const char * species, const char * road);
+void addSpeciesToHood(treeADT trees, const char * hood, const char * species, const char * road);
 
 #endif /*arbolesADT_h*/
