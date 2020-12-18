@@ -334,6 +334,7 @@ char * next(treeADT trees, int option, float * num1, float * num2){
       (*num1) = aux1->speciesDim;
       trees->currentH = aux1->tail;
       return aux1->name;
+    default:
+      exit(6);
   }
-  return NULL;
 }

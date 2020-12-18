@@ -4,13 +4,13 @@
 #include <string.h>
 #define MAX 1000
 
-typedef struct node{ //nodo para el query1
+typedef struct node{
   float number;
   char * name;
   struct node * tail;
 }TNode;
 
-typedef TNode * TList;
+typedef TNode * TList; // lista con un nombre y un numero, ordenada de mayor a menor.
 
 int checkQuery(void){
   if(fopen("query1.csv", "r") != NULL || fopen("query2.csv", "r") != NULL || fopen("query3.csv", "r") != NULL || fopen("query4.csv", "r") != NULL || fopen("query5.csv", "r") != NULL || fopen("query4.csv", "r") != NULL)
@@ -165,7 +165,7 @@ void query3(treeADT trees,  char ** hoodVec, int totalHoods){
   fprintf(newFile,"BARRIO;CALLE_CON_MAS_ARBOLES;ARBOLES\n");
 
   char * name;
-  float cant,aux2; //aux2 no va a ser usadas
+  float cant,aux2; //aux2 no va a ser usada
 
   toBegin(trees,1);
   int i;
@@ -187,16 +187,71 @@ void query4(treeADT trees,  char ** speciesVec, int totalSpecies){
   fprintf(newFile,"NOMBRE_CIENTIFICO;MIN;MAX\n");
 
   char * name;
-  float min,max; //aux2 no va a ser usadas
+  float min,max; //aux2 no va a ser usada
 
   toBegin(trees,2);
   int i;
   for(i = 0; i<totalSpecies; i++){
     if(hasNext(trees,2)){
       name = next(trees,4,&min,&max);
-      fprintf(newFile, "%s;%.2f;%.2f\n",speciesVec[i],min,max);
+      fprintf(newFile, "%s;%.2f;%.2f\n",name,min,max);
     }
   }
+  fclose(newFile);
+  return;
+}
+
+void query5(treeADT trees,  char ** speciesVec, int totalSpecies){
+  FILE * newFile;
+  newFile = fopen("query5.csv", "w");
+  if(newFile == NULL)
+    exit(5);
+  fprintf(newFile,"NOMBRE_CIENTIFICO\n");
+
+  char * name;
+  float aux1,aux2; //aux1 y aux2 no van a ser usadas
+
+  toBegin(trees,2);
+  int i;
+  for(i = 0; i<totalSpecies; i++){
+    if(hasNext(trees,2)){
+      name = next(trees,5,&aux1,&aux2);
+      if(name !=NULL)
+        fprintf(newFile, "%s\n",name);
+    }
+  }
+  fclose(newFile);
+  return;
+}
+
+void query6(treeADT trees,  char ** hoodVec, int totalHoods){
+  FILE * newFile;
+  newFile = fopen("query6.csv", "w");
+  if(newFile == NULL)
+    exit(5);
+  fprintf(newFile,"BARRIO;ESPECIES_DISTINTAS\n");
+
+  char * name;
+  int i;
+  float cant,aux2; //aux2 no va a ser usada
+
+  TList fileList = NULL;
+
+  toBegin(trees,1);
+  for(i = 0; i<totalHoods; i++){
+    if(hasNext(trees,1)){
+      name = next(trees,1,&cant,&aux2);
+      fileList = addToList(fileList,cant,name);
+    }
+  }
+  TList aux = fileList;
+  i=0;
+  while (aux!=NULL && i<10){
+    fprintf(newFile, "%s;%.0f\n",aux->name,aux->number);
+    aux = aux->tail;
+    i++;
+  }
+  freeList(fileList);
   fclose(newFile);
   return;
 }

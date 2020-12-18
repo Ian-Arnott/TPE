@@ -16,13 +16,17 @@ int checkQuery(void);
 
 int checkArguments(const char ** argv);
 
-void query1(treeADT trees,  char ** hoodVec, int totalHoods);
+void query1(treeADT trees, char ** hoodVec, int totalHoods);
 
-void query2(treeADT trees,  char ** hoodVec, int totalHoods);
+void query2(treeADT trees, char ** hoodVec, int totalHoods);
 
-void query3(treeADT trees,  char ** hoodVec, int totalHoods);
+void query3(treeADT trees, char ** hoodVec, int totalHoods);
 
-void query4(treeADT trees,  char ** speciesVec, int totalSpecies);
+void query4(treeADT trees, char ** speciesVec, int totalSpecies);
+
+void query5(treeADT trees, char ** speciesVec, int totalSpecies);
+
+void query6(treeADT trees, char ** hoodVec, int totalHoods);
 
 
 #endif /*dataManagementADT_h*/

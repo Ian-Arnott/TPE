@@ -52,6 +52,9 @@ int main(int argc, char const *argv[]){
   query2(trees,hoodVec,totalHoods);
   query3(trees,hoodVec,totalHoods);
   query4(trees,speciesVec,totalSpecies);
+  query5(trees,speciesVec,totalSpecies);
+  query6(trees,hoodVec,totalHoods);
+
 
   for (int i = 0; i < totalHoods ; i++){
     free(hoodVec[i]);
@@ -60,6 +63,8 @@ int main(int argc, char const *argv[]){
   for (int i = 0; i < totalSpecies ; i++){
     free(speciesVec[i]);
   }
+  fclose(hoodFile);
+  fclose(treeFile);
   free(speciesVec);
   freeTreeList(trees);
   return 0;
