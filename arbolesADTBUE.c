@@ -12,7 +12,7 @@ int main(int argc, char const *argv[]){
     fprintf(stderr, "ERROR: Cantidad incorrecta de argumentos\n");
     exit(2);
   }
-  if(checkArguments(argv)){
+  if(checkArguments(argv,1)){
 		fprintf(stderr, "ERROR: Los argumentos introducidos no son los correctos\nO el orden de los argumentos es incorrecto\n");
 		exit(3);
 	}

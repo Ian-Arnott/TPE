@@ -18,10 +18,13 @@ int checkQuery(void){
   return 0;
 }
 
-int checkArguments(const char ** argv){
-  if(strstr(argv[1], "arbolesBUE.csv") == NULL || strstr(argv[2], "barriosBUE.csv") == NULL)
-    return 1;
-  return 0;
+int checkArguments(const char ** argv, int option){
+  int flag = 0;
+  if((strstr(argv[1], "arbolesBUE.csv") == NULL || strstr(argv[2], "barriosBUE.csv") == NULL) && option == 1)
+    flag = 1;
+  if((strstr(argv[1], "arbolesVAN.csv") == NULL || strstr(argv[2], "barriosVAN.csv") == NULL) && option == 2)
+    flag = 1;
+  return flag;
 }
 
 void fillHoods(treeADT trees, FILE * neighbourhoods){

@@ -14,7 +14,7 @@ void fillSpecies(treeADT trees, FILE * treeFile, int vec[]);
 
 int checkQuery(void);
 
-int checkArguments(const char ** argv);
+int checkArguments(const char ** argv, int option);
 
 void query1(treeADT trees, char ** hoodVec, int totalHoods);
 
