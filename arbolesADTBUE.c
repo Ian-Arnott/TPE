@@ -47,9 +47,11 @@ int main(int argc, char const *argv[]){
   int totalSpecies = sizeSpecies(trees);
 
 
+
   query1(trees,hoodVec,totalHoods);
   query2(trees,hoodVec,totalHoods);
   query3(trees,hoodVec,totalHoods);
+  query4(trees,speciesVec,totalSpecies);
 
   for (int i = 0; i < totalHoods ; i++){
     free(hoodVec[i]);

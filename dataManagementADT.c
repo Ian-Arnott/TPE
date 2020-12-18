@@ -178,3 +178,25 @@ void query3(treeADT trees,  char ** hoodVec, int totalHoods){
   fclose(newFile);
   return;
 }
+
+void query4(treeADT trees,  char ** speciesVec, int totalSpecies){
+  FILE * newFile;
+  newFile = fopen("query4.csv", "w");
+  if(newFile == NULL)
+    exit(5);
+  fprintf(newFile,"NOMBRE_CIENTIFICO;MIN;MAX\n");
+
+  char * name;
+  float min,max; //aux2 no va a ser usadas
+
+  toBegin(trees,2);
+  int i;
+  for(i = 0; i<totalSpecies; i++){
+    if(hasNext(trees,2)){
+      name = next(trees,4,&min,&max);
+      fprintf(newFile, "%s;%.2f;%.2f\n",speciesVec[i],min,max);
+    }
+  }
+  fclose(newFile);
+  return;
+}

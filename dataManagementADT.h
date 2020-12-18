@@ -22,5 +22,7 @@ void query2(treeADT trees,  char ** hoodVec, int totalHoods);
 
 void query3(treeADT trees,  char ** hoodVec, int totalHoods);
 
+void query4(treeADT trees,  char ** speciesVec, int totalSpecies);
+
 
 #endif /*dataManagementADT_h*/
