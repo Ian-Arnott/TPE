@@ -1,7 +1,6 @@
 #include "arbolesADT.h"
 #include <stdlib.h>
 #include <stddef.h>
-#include <stdio.h>
 #define BLOCK 10
 
 typedef struct hoodNode{
@@ -37,6 +36,7 @@ typedef struct treeCDT{
   struct speciesNode * currentS;
 }treeCDT;
 
+static int getMax(elementQty * vec, size_t dim);
 
 treeADT newTreeList(void){
   return calloc(1,sizeof(treeCDT));
@@ -177,11 +177,13 @@ static hoodNode * addSpeciesToHoodRec(hoodNode * list, const char * hood, const 
     //para el vector que contiene las calles
     if((i=checkElem(list->roads,road,list->roadsDim))!=-1)
       list->roads[i].qty++;
-    else
+    else{
       list->roads = addElem(list->roads,road,&(list->roadsDim));
+    }
     //idem a lo anterior pero con el vector de species
-    if((i=checkElem(list->species,specie,list->speciesDim))!=-1)
+    if((i=checkElem(list->species,specie,list->speciesDim))!=-1){
       list->species[i].qty++;
+    }
     else{
       list->species = addElem(list->species,specie,&(list->speciesDim));
       (*added)=1;
@@ -276,13 +278,15 @@ void toBegin(treeADT trees, int option){
     exit(6);
 }
 static int getMax(elementQty * vec, size_t dim){
-  int i=0;
-  size_t max = vec[i].qty;
-  for(i=1; i<dim; i++){
-    if(max<vec[i].qty)
+  int i, flag;
+  size_t max = 0;
+  for(i=0; i<dim; i++){
+    if(max<vec[i].qty){
+      flag = i;
       max = vec[i].qty;
+    }
   }
-  return i;
+  return flag;
 }
 int hasNext(treeADT trees, int option){
   if(option == 1){
@@ -295,22 +299,8 @@ int hasNext(treeADT trees, int option){
     exit(6);
 }
 char * next(treeADT trees, int option, float * num1, float * num2){
-  hoodNode * aux1;
-  speciesNode * aux2;
-  //este switch elige el current.
-  switch (option) {
-    case 1:
-    case 2:
-
-    case 3:
-    case 6:
-      aux1 = trees->currentH;
-      break;
-    case 4:
-    case 5:
-      aux2 = trees->currentS;
-      break;
-  }
+  hoodNode * aux1 = trees->currentH;
+  speciesNode * aux2 = trees->currentS;
   int i;
   switch (option) {
     case 1:
@@ -324,6 +314,7 @@ char * next(treeADT trees, int option, float * num1, float * num2){
       return aux1->species[i].name;
     case 3:
       i = getMax(aux1->roads, aux1->roadsDim);
+      (*num1) = aux1->roads[i].qty;
       trees->currentH = aux1->tail;
       return aux1->roads[i].name;
     case 4:

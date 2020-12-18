@@ -1,9 +1,25 @@
 #include "dataManagementADT.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#define MAX 1000
+
+typedef struct node{ //nodo para el query1
+  float number;
+  char * name;
+  struct node * tail;
+}TNode;
+
+typedef TNode * TList;
 
 int checkQuery(void){
   if(fopen("query1.csv", "r") != NULL || fopen("query2.csv", "r") != NULL || fopen("query3.csv", "r") != NULL || fopen("query4.csv", "r") != NULL || fopen("query5.csv", "r") != NULL || fopen("query4.csv", "r") != NULL)
+    return 1;
+  return 0;
+}
+
+int checkArguments(const char ** argv){
+  if(strstr(argv[1], "arbolesBUE.csv") == NULL || strstr(argv[2], "barriosBUE.csv") == NULL)
     return 1;
   return 0;
 }
@@ -28,7 +44,7 @@ void fillHoods(treeADT trees, FILE * neighbourhoods){
 	}
 }
 
-void fillSpecies(treeADT trees, FILE * treeFile, const int * vec){
+void fillSpecies(treeADT trees, FILE * treeFile, int vec[]){
   char fileLine[MAX];
   fgets(fileLine, MAX, treeFile);
   char * hood;
@@ -45,26 +61,120 @@ void fillSpecies(treeADT trees, FILE * treeFile, const int * vec){
         aux = strtok(fileLine, ";");
       else
         aux = strtok(NULL, ";");
-      switch(i){  //para otras bases de datos, se utilizan los headers para barrio, calle, nombre_cientifico, DIAMETRO_ALTURA_PECHO
-        case vec[1]:
-          hood = aux;
-          break;
-        case vec[2]:
-          road = aux;
-          break;
-        case vec[3]:
-          specie = aux;
-          break;
-        case vec[4]:
-          diameter = atof(aux);
-          break;
+      if(i==vec[1]){
+        hood = aux;
+      }
+      else if(i==vec[2]){
+        road = aux;
+      }
+      else if(i==vec[3]){
+        specie = aux;
+      }
+      else if(i==vec[4]){
+        diameter = atof(aux);
       }
     }
     flag = addSpecies(trees,specie,diameter);
     if( flag == 0 ){
-      fprintf(stderr, "ERROR: No se pudieron agregar todas las especies\n");
       exit(1);
     }
     addSpeciesToHood(trees, hood, specie, road);
   }
+}
+
+static void freeList(TList list){
+  if(list==NULL)
+    return;
+  freeList(list->tail);
+  free(list->name);
+  free(list);
+}
+static TList addToList(TList list, float number, char * name){
+  if(list == NULL || list->number<number){
+    TList new = malloc(sizeof(TNode));
+    if(new == NULL)
+      exit(1);
+    new->number = number;
+    new->name = malloc(sizeof(char)*(strlen(name)+1));
+    if(new->name == NULL)
+      exit(1);
+    strcpy(new->name,name);
+    new->tail = list;
+    return new;
+  }
+  else
+    list->tail = addToList(list->tail,number,name);
+  return list;
+}
+void query1(treeADT trees,  char ** hoodVec, int totalHoods){
+  FILE * newFile;
+  newFile = fopen("query1.csv", "w");
+  if(newFile == NULL)
+    exit(5);
+  fprintf(newFile,"BARRIO;ARBOLES_POR_HABITANTE\n");
+
+  char * name;
+  float totalTrees, population, ratio;
+  TList fileList = NULL;
+
+  toBegin(trees,1);
+  for(int i = 0; i<totalHoods; i++){
+    if(hasNext(trees,1)){
+      name = next(trees,1,&totalTrees,&population);
+      ratio = totalTrees/population;
+      fileList = addToList(fileList,ratio,name);
+    }
+  }
+  TList aux = fileList;
+  while (aux!=NULL){
+    fprintf(newFile, "%s;%.2f\n",aux->name,aux->number);
+    aux = aux->tail;
+  }
+  freeList(fileList);
+  fclose(newFile);
+  return;
+}
+
+void query2(treeADT trees,  char ** hoodVec, int totalHoods){
+  FILE * newFile;
+  newFile = fopen("query2.csv", "w");
+  if(newFile == NULL)
+    exit(5);
+  fprintf(newFile,"BARRIO;NOMBRE_CIENTIFICO\n");
+
+  char * name;
+  float aux1,aux2; //dos variables que no van a ser usadas
+
+  toBegin(trees,1);
+  int i;
+  for(i = 0; i<totalHoods; i++){
+    if(hasNext(trees,1)){
+      name = next(trees,2,&aux1,&aux2);
+      fprintf(newFile, "%s;%s\n",hoodVec[i],name);
+    }
+  }
+  fclose(newFile);
+  return;
+}
+
+void query3(treeADT trees,  char ** hoodVec, int totalHoods){
+  FILE * newFile;
+  newFile = fopen("query3.csv", "w");
+  if(newFile == NULL)
+    exit(5);
+  fprintf(newFile,"BARRIO;CALLE_CON_MAS_ARBOLES;ARBOLES\n");
+
+  char * name;
+  float cant,aux2; //aux2 no va a ser usadas
+
+  toBegin(trees,1);
+  int i;
+  for(i = 0; i<totalHoods; i++){
+    if(hasNext(trees,1)){
+      name = next(trees,3,&cant,&aux2);
+      fprintf(newFile, "%s;%s;%.0f\n",hoodVec[i],name,cant);
+    }
+  }
+  fclose(newFile);
+  return;
 }
