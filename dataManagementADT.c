@@ -243,7 +243,7 @@ void query6(treeADT trees,  char ** hoodVec, int totalHoods){
   toBegin(trees,1);
   for(i = 0; i<totalHoods; i++){
     if(hasNext(trees,1)){
-      name = next(trees,1,&cant,&aux2);
+      name = next(trees,6,&cant,&aux2);
       fileList = addToList(fileList,cant,name);
     }
   }
