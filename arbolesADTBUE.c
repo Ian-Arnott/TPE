@@ -67,5 +67,6 @@ int main(int argc, char const *argv[]){
   fclose(treeFile);
   free(speciesVec);
   freeTreeList(trees);
+  fprintf(stderr, "Se hizo lo pedido\n");
   return 0;
 }
